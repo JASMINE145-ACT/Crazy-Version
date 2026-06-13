@@ -12,7 +12,7 @@ AionUI may provide UI for viewing or editing runtime configuration, but the auth
 
 | Area | Authority | Notes |
 | --- | --- | --- |
-| Skills | CCB-Wanding | AionUI Skills UI should show CCB-Wanding configured skills. |
+| Skills | CCB-Wanding | AionUI Skills UI shows and edits CCB-Wanding user skills. |
 | MCP servers/tools | CCB-Wanding | AionUI MCP UI should show CCB-Wanding configured MCP and status. |
 | Assistant templates that affect runtime | CCB-Wanding | AionUI can keep the template UI, but template persistence/application should move to CCB-Wanding. |
 | Slash commands/capabilities | CCB-Wanding | AionUI renders and forwards; CCB-Wanding owns command semantics. |
@@ -29,6 +29,15 @@ AionUI performs a one-shot migration when CCB-Wanding is installed:
 - Writes `%LOCALAPPDATA%\CCB-Wanding\.claude\aionui-migration-report.json`.
 - Does not set the completion flag if CCB-Wanding is not installed, so the migration can run later.
 
+## Skills Authority Implementation
+
+- CCB-Wanding now has a testable skills manifest generator in `src/services/acp/skillsManifest.ts` based on the existing `getSkillToolCommands(cwd)` loader.
+- AionUI now uses a CCB-backed Skills adapter in `packages/desktop/src/common/config/ccbSkills.ts`.
+- AionUI Skills Hub lists directories under `%LOCALAPPDATA%\CCB-Wanding\.claude\skills`.
+- Import copies skill directories into the CCB-Wanding skills directory with sanitized folder names.
+- Delete removes the matching CCB-Wanding skill directory, so new CCB sessions do not load it.
+- Legacy AionUI Skills Hub data is migration/read-only input, not runtime authority for CCB sessions.
+
 ## Safety Rules
 
 - CCB-owned MCP names are never overwritten: `quotation`, `accurate`, `excel-mcp`, `guide_mcp`, `aionui-image-generation`.
@@ -40,7 +49,14 @@ AionUI performs a one-shot migration when CCB-Wanding is installed:
 ## Verification
 
 - `tests/unit/common-config/ccbConfigMigration.test.ts` passed: 10 tests.
+- `tests/unit/common-config/ccbSkills.test.ts` passed: CCB skills import/list/delete adapter.
+- `src/services/acp/__tests__/skillsManifest.test.ts` passed: CCB skills manifest generator.
 - The migration export path is covered with a temp-directory test for `settings.json` backup, report writing, reserved MCP protection, imported MCP merge, and sanitized skill copy.
-- `bunx tsc --noEmit --pretty false` passed.
+- `bunx tsc --noEmit --pretty false` passed in AionUI.
+- Backend targeted skills/capabilities unit tests passed. Full backend typecheck is currently blocked by sibling MCP authority work in `src/cli/handlers/ccbMcpManifest.ts`.
 - Manual release check: create a new CCB-Wanding conversation and confirm the create payload does not include AionUI legacy MCP/skill overrides.
 - Quotation smoke should still use CCB-Wanding `settings.json` MCP, for example: `查询直接50价格`.
+
+## Remaining Boundary
+
+File-backed CCB user skills are wired into AionUI. A dedicated ACP/HTTP endpoint for a complete manifest of bundled/plugin/project/MCP skills remains future work.
