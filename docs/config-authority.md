@@ -39,7 +39,8 @@ AionUI performs a one-shot migration when CCB-Wanding is installed:
 
 ## Verification
 
-- `tests/unit/common-config/ccbConfigMigration.test.ts` passed: 9 tests.
+- `tests/unit/common-config/ccbConfigMigration.test.ts` passed: 10 tests.
+- The migration export path is covered with a temp-directory test for `settings.json` backup, report writing, reserved MCP protection, imported MCP merge, and sanitized skill copy.
 - `bunx tsc --noEmit --pretty false` passed.
 - Manual release check: create a new CCB-Wanding conversation and confirm the create payload does not include AionUI legacy MCP/skill overrides.
 - Quotation smoke should still use CCB-Wanding `settings.json` MCP, for example: `查询直接50价格`.
