@@ -1,0 +1,44 @@
+{
+  "schemaVersion": 1,
+  "name": "crazy-version-deployment",
+  "status": "bootstrap",
+  "updatedAt": "2026-06-13",
+  "components": {
+    "aionui": {
+      "role": "desktop-frontend-exe",
+      "sourceRepo": "https://github.com/iOfficeAI/AionUi.git",
+      "localPath": "D:\\Projects\\aionui-src",
+      "sourceHead": "762a8b0a73a7138aabab90a9c8538fec04361a3f",
+      "pendingLocalChanges": true,
+      "notes": "Contains local slash-command merge work not represented by sourceHead until committed."
+    },
+    "ccbWanding": {
+      "role": "backend-acp-mcp-runtime",
+      "sourceRepo": "https://github.com/claude-code-best/claude-code.git",
+      "localPath": "D:\\claude-code-B",
+      "sourceHead": "91cffe16e23fc886f6860a7edfe8754d74a4abbf",
+      "deployPath": "D:\\CCB-Wanding\\dist",
+      "pendingLocalChanges": true,
+      "notes": "Live dist has been rebuilt and deployed from local working tree after slash-command ACP exposure change."
+    },
+    "installerAndSpecs": {
+      "role": "installer-route-b-trellis-docs",
+      "sourceRepo": "https://github.com/JASMINE145-ACT/CCB-Iinstaller.git",
+      "localPath": "D:\\Projects\\claude-code-best",
+      "sourceHead": "7626f6fbad0765f9efc36ad0299ed4a24fe3eaab",
+      "pendingLocalChanges": true,
+      "notes": "Trellis docs record slash-command unification and route-b deployment notes."
+    }
+  },
+  "artifacts": {
+    "policy": "Do not commit generated exe/dist/zip files to normal git history unless explicitly approved. Prefer GitHub Releases or server artifact storage with checksums."
+  },
+  "verification": {
+    "backendBuild": "bun run build succeeded in D:\\claude-code-B",
+    "backendDeploy": "deploy-claude-code-b-to-wanding.ps1 -Backup succeeded",
+    "routeBSync": "sync-aionui-ccb-route-b.ps1 -RestartAionUiWeb synced 5 targets",
+    "nativeAcpSmoke": "ccb-installer/test-native-acp-agent.mjs succeeded",
+    "aionuiUnit": "vitest slashCommandsMerge.test.ts passed",
+    "aionuiTypecheck": "blocked by pre-existing MessageAcpPermission.tsx type errors"
+  }
+}
